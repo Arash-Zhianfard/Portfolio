@@ -2,8 +2,8 @@
 
 namespace Abstraction.Interfaces.Repositories
 {
-    public interface IPortfolioRepository : IBaseRepository<Portfolio>
+    public interface IUserRepository : IBaseRepository<User>
     {
-       
+        
     }
 }

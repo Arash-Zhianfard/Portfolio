@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Abstraction.Models
 {
-    public class WatchList
+    public class WatchList:BaseModel
     {
         public string Name { get; set; }
         public Stock Stock { get; set; }
