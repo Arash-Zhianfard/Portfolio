@@ -7,16 +7,11 @@ namespace Service.Implementation
     public class PortfolioService : IPortfolioService
     {
         private readonly IPortfolioRepository _portfolioRepository;
-        private readonly IStockService _stockService;
-        private readonly IPositionService _positionService;
         private readonly IVwdService _vwdService;
 
-        public PortfolioService(IPortfolioRepository portfolioService, IStockService stockService,
-            IPositionService positionService, IVwdService vwdService)
+        public PortfolioService(IPortfolioRepository portfolioService, IVwdService vwdService)
         {
             _portfolioRepository = portfolioService;
-            _stockService = stockService;
-            _positionService = positionService;
             _vwdService = vwdService;
         }
 
@@ -24,8 +19,6 @@ namespace Service.Implementation
         {
             return _portfolioRepository.AddAsync(entity);
         }
-
-
 
         public async Task<ICollection<PortfolioItem>> Get(int protfolioId)
         {
