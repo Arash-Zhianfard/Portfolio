@@ -4,8 +4,6 @@ namespace Abstraction.Interfaces.Services
 {
     public interface IStockService
     {
-        Task<Stock> AddAsync(Stock entity);
-        
-
+        Task<Stock> GetAsync(string symbol,int userId);
     }
 }

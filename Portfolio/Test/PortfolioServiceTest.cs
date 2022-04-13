@@ -11,19 +11,14 @@ namespace Test
 {
     public class PortfolioServiceTest
     {
-        private Mock<IPortfolioRepository> portfolioService;
-        private Mock<IStockService> stockService;
-        private Mock<IPositionService> positionService;
-        private Mock<IVwdService> wdService;
+        private Mock<IPortfolioRepository> _portfolioRepository;
+        private Mock<IVwdService> _wdService;
         [SetUp]
         public void Setup()
         {
-            portfolioService = new Mock<IPortfolioRepository>();
-
-            stockService = new Mock<IStockService>();
-            positionService = new Mock<IPositionService>();
-            wdService = new Mock<IVwdService>();
-            portfolioService.Setup(x => x.GetAsync(It.IsAny<int>())).ReturnsAsync(new Portfolio
+            _portfolioRepository = new Mock<IPortfolioRepository>();
+            _wdService = new Mock<IVwdService>();
+            _portfolioRepository.Setup(x => x.GetAsync(It.IsAny<int>())).ReturnsAsync(new Portfolio
             {
                 Name = "name",
                 Id = 1,
@@ -31,13 +26,13 @@ namespace Test
                 UserId = 1,
                 PostionId = 1,
             });
-            wdService.Setup(x => x.GetAsync("symbol1")).ReturnsAsync(new VwdResponse
+            _wdService.Setup(x => x.GetAsync("symbol1")).ReturnsAsync(new VwdResponse
             {
                 Name = "stock1",
                 Price = 80,
                 Currency = "eur"
             });
-            wdService.Setup(x => x.GetAsync("symbol2")).ReturnsAsync(new VwdResponse
+            _wdService.Setup(x => x.GetAsync("symbol2")).ReturnsAsync(new VwdResponse
             {
                 Name = "stock2",
                 Price = 200,
@@ -114,8 +109,7 @@ namespace Test
         [Test]
         public void Get_ShouldNotBeNull()
         {
-            var _portfolioService = new PortfolioService(portfolioService.Object,
-                stockService.Object, positionService.Object, wdService.Object);
+            var _portfolioService = new PortfolioService(_portfolioRepository.Object, _wdService.Object);
             var protItem = _portfolioService.Get(1).Result;
             Assert.IsNotNull(protItem);
         }
@@ -123,8 +117,7 @@ namespace Test
         public void Get_ShouldReturnExpectedStockCount()
         {
             const int stockCount = 2;
-            var _portfolioService = new PortfolioService(portfolioService.Object,
-                stockService.Object, positionService.Object, wdService.Object);
+            var _portfolioService = new PortfolioService(_portfolioRepository.Object, _wdService.Object);
             var protItem = _portfolioService.Get(1).Result;
             Assert.AreEqual(protItem.Count, stockCount);
         }
@@ -151,8 +144,7 @@ namespace Test
                 Quantity=4,
                 Symbol="symbol2"
             }};
-            var _portfolioService = new PortfolioService(portfolioService.Object,
-                stockService.Object, positionService.Object, wdService.Object);
+            var _portfolioService = new PortfolioService(_portfolioRepository.Object, _wdService.Object);
             var protItem = _portfolioService.Get(1).Result;
             CollectionAssert.AreEqual(protItem, expect);
         }
@@ -164,41 +156,13 @@ namespace Test
         [TestCase(900, 270, 10, 200)]
         public void CalcYeild_ShouldReturnExpectedResult(double totalBoughtPrice, double ItemCurrentPrice, int quaintity, double expected)
         {
-            var _portfolioService = new PortfolioService(portfolioService.Object,
-                stockService.Object, positionService.Object, wdService.Object);
+            var _portfolioService = new PortfolioService(_portfolioRepository.Object, _wdService.Object);
             var yeild = _portfolioService.CalcYeild(totalBoughtPrice, ItemCurrentPrice, quaintity);
             Assert.AreEqual(yeild, expected);
         }
 
 
-        public static IEnumerable<TestCaseData> TestCases
-        {
-            get
-            {
-                yield return new TestCaseData(
-                    new PositionRequest { BuyPrice = 100, Contract = 2 }, 
-                    new Position { Bought = 100, Contract = 10 }, 
-                    new Position { Bought = 200, Contract = 12 }).SetName("testcase1");
-                yield return new TestCaseData(
-                    new PositionRequest { BuyPrice = 25, Contract = 1 },
-                    new Position { Bought = 100, Contract = 22 }, 
-                    new Position { Bought = 125, Contract = 23 }).SetName("testcase2");
-                yield return new TestCaseData(
-                    new PositionRequest { BuyPrice = 55, Contract = 22 }, 
-                    new Position { Bought = 55, Contract = 10 }, 
-                    new Position { Bought = 110, Contract = 32 }).SetName("testcase3");
-            }
-        }
-        [TestCaseSource("TestCases")]
-        public void ConsolidatePosition_ShouldReturnExpectedResult(PositionRequest newPosition, Position oldPosition, Position expected)
-        {
-            var _portfolioService = new PortfolioService(portfolioService.Object,
-                stockService.Object, positionService.Object, wdService.Object);
-            var yeild = _portfolioService.ConsolidatePosition(newPosition, oldPosition);
-
-            Assert.AreEqual(yeild.Bought, expected.Bought);
-            Assert.AreEqual(yeild.Contract, expected.Contract);
-        }
+   
 
 
     }

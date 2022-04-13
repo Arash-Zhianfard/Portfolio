@@ -6,9 +6,6 @@ using NUnit.Framework;
 using Service.Implementation;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Test
 {
@@ -37,6 +34,25 @@ namespace Test
                 });
             wdService = new Mock<IVwdService>();
 
+        }
+
+        public static IEnumerable<TestCaseData> ConsolidatePositionTestCases
+        {
+            get
+            {
+                yield return new TestCaseData(
+                    new PositionRequest { BuyPrice = 100, Contract = 2 },
+                    new Position { Bought = 100, Contract = 10 },
+                    new Position { Bought = 200, Contract = 12 }).SetName("testcase1");
+                yield return new TestCaseData(
+                    new PositionRequest { BuyPrice = 25, Contract = 1 },
+                    new Position { Bought = 100, Contract = 22 },
+                    new Position { Bought = 125, Contract = 23 }).SetName("testcase2");
+                yield return new TestCaseData(
+                    new PositionRequest { BuyPrice = 55, Contract = 22 },
+                    new Position { Bought = 55, Contract = 10 },
+                    new Position { Bought = 110, Contract = 32 }).SetName("testcase3");
+            }
         }
         [Test]
         public void Sell_ShouldThrowExceptionIfSellMoreThanItHave()
@@ -77,6 +93,16 @@ namespace Test
         public void Sell_NumberOfShouldBeAsExcpect()
         {
 
+        }
+
+        [TestCaseSource("ConsolidatePositionTestCases")]
+        public void ConsolidatePosition_ShouldReturnExpectedResult(PositionRequest newPosition, Position oldPosition, Position expected)
+        {
+            var _portfolioService = new ExchangeService(portfolioService.Object, stockService.Object,
+             positionService.Object, wdService.Object);
+            var yeild = _portfolioService.ConsolidatePosition(newPosition, oldPosition);
+            Assert.AreEqual(yeild.Bought, expected.Bought);
+            Assert.AreEqual(yeild.Contract, expected.Contract);
         }
     }
 }

@@ -14,5 +14,20 @@ namespace Repository.Repositories
         {
             this._appDbContext = db;
         }
+
+        public async Task<Stock> GetAsync(string symbol, int userId)
+        {
+            var query = from user in _appDbContext.Users
+                        join port in _appDbContext.Portfolios
+                        on user.Id equals port.UserId
+                        join posi in _appDbContext.Positions
+                        on port.PostionId equals posi.Id
+                        join stck in _appDbContext.Stocks
+                        on posi.StockId equals stck.Id
+                        where user.Id == userId && stck.Symbol == symbol
+                        select stck;
+            var result = await query.FirstOrDefaultAsync();
+            return result;
+        }
     }
 }

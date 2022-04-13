@@ -28,7 +28,7 @@ namespace Service.Implementation
 
         public async Task<Position> Sell(SellRequest sellRequest)
         {
-            if (sellRequest.Contract < 0 || sellRequest.Price < 0) 
+            if (sellRequest.Contract < 0 || sellRequest.Price < 0)
             {
                 throw new ArgumentException();
             }
@@ -52,7 +52,7 @@ namespace Service.Implementation
             if (stockInfo != null)
             {
                 Stock? stock = null;
-                stock = new Stock();//await _stockService.(1);
+                stock = await _stockService.GetAsync(posistionReqeust.Symbol, posistionReqeust.UserId);
                 if (stock == null)
                 {
                     stock = await _stockService.AddAsync(new Stock()

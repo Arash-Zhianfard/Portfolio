@@ -10,6 +10,7 @@ namespace Abstraction.Models
     {
         public string Symbol { get; set; }
         public int PortfolioId { get; set; }
+        public int UserId { get; set; }
         public int Contract { get; set; }
         public double BuyPrice { get; set; }
     }
