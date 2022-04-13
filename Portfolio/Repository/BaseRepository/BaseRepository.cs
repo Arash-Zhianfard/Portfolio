@@ -14,17 +14,18 @@ namespace Repository.BaseRepository
             _dbContext = db;
         }
 
-        public async Task<T> CreateAsync(T entity)
+        public async Task<T> AddAsync(T entity)
         {
             await _dbContext.AddAsync(entity);
             await _dbContext.SaveChangesAsync();
             return entity;
         }
 
-        public virtual async Task UpdateAsync(T entity)
+        public virtual async Task<T> UpdateAsync(T entity)
         {
             _dbContext.Set<T>().Update(entity);
             await _dbContext.SaveChangesAsync();
+            return entity;
         }
 
         public async Task DeleteAsync(T entity)

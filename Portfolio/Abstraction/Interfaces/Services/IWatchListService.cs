@@ -4,6 +4,6 @@ namespace Abstraction.Interfaces.Services
 {
     public interface IWatchListService
     {
-        Task AddAsync(WatchList watchlist);
+        Task<WatchList> AddAsync(WatchList watchlist);
     }
 }

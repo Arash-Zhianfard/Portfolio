@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Abstraction.Models;
 
 namespace Abstraction.Interfaces.Services
 {
-    internal class IUserService
+    public interface IUserService
     {
+        Task<User> AddAsync(User entity);
+        Task<User> GetAsync(string username, string password);
     }
 }
