@@ -25,45 +25,7 @@ namespace Service.Implementation
             return _portfolioRepository.AddAsync(entity);
         }
 
-        public async Task<Position> AddPostion(PositionRequest posistionReqeust)
-        {
-            var stockInfo = await _vwdService.GetAsync(posistionReqeust.Symbol);
-            if (stockInfo != null)
-            {
-                Stock? stock = null;
-                stock = new Stock();//await _stockService.(1);
-                if (stock == null)
-                {
-                    stock = await _stockService.AddAsync(new Stock()
-                    {
-                        Name = stockInfo.Name
-                    });
-                    var postition = await _positionService.AddAsync(new Position()
-                    {
-                        PortfolioId = posistionReqeust.PortfolioId,
-                        StockId = stock.Id,
-                        Contract = posistionReqeust.Contract,
-                        Bought = posistionReqeust.BuyPrice 
-                    });
-                    return postition;
-                }
-                var oldPosition = stock.Positions.FirstOrDefault();
-                var consolidatedPosition = ConsolidatePosition(posistionReqeust, oldPosition);
-                await _positionService.UpdateAsync(consolidatedPosition);
-                return oldPosition;
-            }
-            else
-            {
-                throw new DirectoryNotFoundException();
-            }
-        }
 
-        public Position ConsolidatePosition(PositionRequest newPosition, Position? oldPosition)
-        {
-            oldPosition.Contract += newPosition.Contract;
-            oldPosition.Bought += newPosition.BuyPrice;
-            return oldPosition;
-        }
 
         public async Task<ICollection<PortfolioItem>> Get(int protfolioId)
         {

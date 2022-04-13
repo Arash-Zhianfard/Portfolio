@@ -10,6 +10,7 @@ namespace Abstraction.Interfaces.Services
     public interface IExchangeService
     {
         Task<Position> Sell(SellRequest sellRequest);
+        Task<Position> AddPostion(PositionRequest positionRequest);
         Task Buy(BuyRequest buyRequest);
     }
 }
