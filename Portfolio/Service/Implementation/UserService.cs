@@ -15,17 +15,21 @@ namespace Service.Implementation
 
         public UserService(IUserRepository userRepository)
         {
-            this._userRepository = userRepository;
+            _userRepository = userRepository;
         }
         public Task<User> AddAsync(User entity)
         {
-            return this._userRepository.AddAsync(entity);
+            return _userRepository.AddAsync(entity);
         }
 
         public Task<User> GetAsync(string username, string password)
         {
-            return this._userRepository.GetAsync(username,password);
+            return _userRepository.GetAsync(username,password);
         }
 
+        public Task<User> GetAsync(string username)
+        {
+            return _userRepository.GetAsync(username);
+        }
     }
 }
