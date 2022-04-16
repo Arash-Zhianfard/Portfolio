@@ -9,6 +9,7 @@ using Microsoft.OpenApi.Models;
 using Repository;
 using Repository.Repositories;
 using Service.Implementation;
+using Service.Model;
 using System.Text;
 using WebApp.Filter;
 
@@ -20,55 +21,32 @@ namespace WebApp
         {
             var jwtSection = configurations.GetSection("JwtSetting");
             services.Configure<JwtSetting>(configurations.GetSection("jwtSetting"));
+            services.Configure<VwdservicesApiSetting>(configurations.GetSection("VwdservicesApiSetting"));
+            services.Configure<ConvertCurrencyApiSetting>(configurations.GetSection("ConvertCurrencyApiSetting"));
             services.AddScoped<AuthorizeFilterAttribute>();
+            services.AddScoped<ICurrencyConvertor, CurrencyConvertor>();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IPortfolioService, PortfolioService>();
             services.AddScoped<IStockService, StockService>();
             services.AddScoped<IStockRepository, StockRepository>();
             services.AddScoped<IPortfolioRepository, PortfolioRepository>();
             services.AddScoped<IExchangeService, ExchangeService>();
             services.AddScoped<IPositionRepository, PositionRepository>();
+            services.AddScoped<IPositionService, PositionService>();
             services.AddScoped<IVwdService, VwdService>();
+            services.AddScoped<IApiCaller, ApiCaller>();
+            services.AddScoped<IProfitCalculator, ProfitCalculator>();
             services.AddScoped<IEncryptService, EncryptService>();
             services.Configure<FormOptions>(options => options.BufferBody = true);
             JwtSetting _jwtSetting = new JwtSetting();
             jwtSection.Bind(_jwtSetting);
             var key = Encoding.ASCII.GetBytes(_jwtSetting.SecretKey);
 
-
-
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1.1", new OpenApiInfo { Title = "Values Api", Version = "v1" });
-                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-                {
-                    Description = "Authorization: Bearer ",
-                    Name = "Authorization",
-                    In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.ApiKey
-                });
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement()
-{
-    {
-        new OpenApiSecurityScheme
-        {
-            Reference = new OpenApiReference
-            {
-                Type = ReferenceType.SecurityScheme,
-                Id = "Bearer"
-            },
-            Scheme = "Authorization",
-            Name = "Bearer",
-            In = ParameterLocation.Header,
-
-        },
-        new List<string>()
-    }
-});
-            });
-
-
-
+            services.AddMvc()
+        .AddSessionStateTempDataProvider();
+            services.AddSession();
             // If using IIS:
             services.Configure<IISServerOptions>(options =>
             {

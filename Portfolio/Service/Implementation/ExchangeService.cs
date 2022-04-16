@@ -1,5 +1,4 @@
-﻿using Abstraction.Interfaces.Repositories;
-using Abstraction.Interfaces.Services;
+﻿using Abstraction.Interfaces.Services;
 using Abstraction.Models;
 
 namespace Service.Implementation
@@ -7,83 +6,85 @@ namespace Service.Implementation
     public class ExchangeService : IExchangeService
     {
 
-        private readonly IPortfolioRepository _portfolioRepository;
         private readonly IStockService _stockService;
         private readonly IPositionService _positionService;
         private readonly IVwdService _vwdService;
-
-        public ExchangeService(IPortfolioRepository portfolioService, IStockService stockService,
-            IPositionService positionService, IVwdService vwdService)
+        private readonly ICurrencyConvertor _currencyConvertor;
+        public ExchangeService(IStockService stockService,
+            IPositionService positionService, IVwdService vwdService, ICurrencyConvertor currencyConvertor)
         {
-            _portfolioRepository = portfolioService;
             _stockService = stockService;
             _positionService = positionService;
             _vwdService = vwdService;
+            _currencyConvertor = currencyConvertor;
         }
-
-        public Task Buy(BuyRequest buyRequest)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<Position> Sell(SellRequest sellRequest)
+        public async Task<Position> RemovePosition(SellRequest sellRequest)
         {
             if (sellRequest.Contract < 0 || sellRequest.Price < 0)
             {
-                throw new ArgumentException();
+                throw new CustomException("values Should be greater than zero");
             }
-            var stock = await _positionService.GetAsync(sellRequest.Symbol, sellRequest.UserId);
-            if (stock == null) throw new Exception();
-            if (stock.Contract < sellRequest.Contract)
+            Stock? stock = null;
+            stock = await _stockService.GetAsync(sellRequest.Symbol, sellRequest.UserId);
+            if (stock == null) throw new CustomException("No symbol found");
+            if (stock.Positions.Sum(x => x.Contract) < sellRequest.Contract)
             {
-                throw new Exception();
+                throw new CustomException("number of sell should be equal or less than current asset");
             }
-            else
+            var euro = await _currencyConvertor.Convert(sellRequest.CurrencyName, "EUR");
+            var pricInEuro = euro * sellRequest.Price;
+            var postition = await _positionService.AddAsync(new Position()
             {
-                stock.Contract -= sellRequest.Contract;
-            }
-            var result = await _positionService.UpdateAsync(stock);
-            return result;
+                PortfolioId = sellRequest.PortfolioId,
+                StockId = stock.Id,
+                Contract = sellRequest.Contract,
+                Price = pricInEuro,
+                Bought = pricInEuro * sellRequest.Contract,
+                TransactionType = TransactionType.sell
+            });
+            return postition;
         }
 
-        public async Task<Position> AddPostion(PositionRequest posistionReqeust)
+        public async Task<Position> AddPosition(PositionRequest posistionReqeust)
         {
-            var stockInfo = await _vwdService.GetAsync(posistionReqeust.Symbol);
-            if (stockInfo != null)
+            Stock? stock = null;
+            Stock? newStock = null;
+            stock = await _stockService.GetAsync(posistionReqeust.Symbol, posistionReqeust.UserId);
+            if (stock == null)
             {
-                Stock? stock = null;
-                stock = await _stockService.GetAsync(posistionReqeust.Symbol, posistionReqeust.UserId);
-                if (stock == null)
+                var onlineStockInfo = await _vwdService.GetAsync(posistionReqeust.Symbol);
+                if (string.IsNullOrEmpty(onlineStockInfo.Name)) throw new Exception("symbol not found");
+                newStock = new Stock()
                 {
-                    stock = await _stockService.AddAsync(new Stock()
-                    {
-                        Name = stockInfo.Name
-                    });
-                    var postition = await _positionService.AddAsync(new Position()
-                    {
-                        PortfolioId = posistionReqeust.PortfolioId,
-                        StockId = stock.Id,
-                        Contract = posistionReqeust.Contract,
-                        Bought = posistionReqeust.BuyPrice
-                    });
-                    return postition;
-                }
-                var oldPosition = stock.Positions.FirstOrDefault();
-                var consolidatedPosition = ConsolidatePosition(posistionReqeust, oldPosition);
-                await _positionService.UpdateAsync(consolidatedPosition);
-                return oldPosition;
+                    Name = onlineStockInfo.Name,
+                    Isin = onlineStockInfo.Isin,
+                    Symbol = onlineStockInfo.VwdKey
+                };
             }
             else
             {
-                throw new DirectoryNotFoundException();
+                newStock = new Stock()
+                {
+                    Name = stock.Name,
+                    Isin = stock.Isin,
+                    Symbol = stock.Symbol
+                };
             }
+            var euro = await _currencyConvertor.Convert(posistionReqeust.CurrencyName, "EUR");
+            var pricInEuro = euro * posistionReqeust.Price;
+            var addedStock = await _stockService.AddAsync(newStock);
+            var postition = await _positionService.AddAsync(new Position()
+            {
+                PortfolioId = posistionReqeust.PortfolioId,
+                StockId = addedStock.Id,
+                Contract = posistionReqeust.Contract,
+                Price = pricInEuro,
+                Bought = pricInEuro * posistionReqeust.Contract,
+            });
+            return postition;
+
         }
 
-        public Position ConsolidatePosition(PositionRequest newPosition, Position? oldPosition)
-        {
-            oldPosition.Contract += newPosition.Contract;
-            oldPosition.Bought += newPosition.BuyPrice;
-            return oldPosition;
-        }
     }
 }
+

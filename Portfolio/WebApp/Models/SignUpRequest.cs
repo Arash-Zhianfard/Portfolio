@@ -4,7 +4,10 @@ namespace WebApp.Models
 {
     public class SignUpRequest
     {
-        
+
+        [Required(ErrorMessage = "Email is required")]        
+        public string Email { get; set; }
+
         [Required(ErrorMessage = "UserName is required")]
         [MaxLength(15, ErrorMessage = "Max Error")]
         public string Username { get; set; }

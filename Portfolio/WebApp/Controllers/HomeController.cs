@@ -1,32 +1,53 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
+﻿using Abstraction.Interfaces.Services;
+using Abstraction.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Service.Implementation;
+using WebApp.Filter;
 using WebApp.Models;
 
 namespace WebApp.Controllers
 {
-    public class HomeController : Controller
+    [AuthorizeFilterAttribute]
+    public class HomeController : BasePortfolioController
     {
-        private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
+        private readonly IPortfolioService _portfolioService;
+        public HomeController(IAuthService authService, IPortfolioService portfolioService) : base(authService)
         {
-            _logger = logger;
+            _portfolioService = portfolioService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
+        {
+            var result = await _portfolioService.GetByUserId(UserId);
+            return View(result);
+        }
+        public async Task<IActionResult> CreateIndex()
         {
             return View();
         }
-
-        public IActionResult Privacy()
+        public async Task<IActionResult> Create(PortfolioRequest portfolioRequest)
         {
-            return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    ViewBag.ErrorMessage = ModelState.ToErrorMessage();
+                    return View("CreateIndex");
+                }
+                var result = await _portfolioService.AddAsync(new Portfolio()
+                {
+                    Name = portfolioRequest.Name,
+                    UserId = UserId
+                });
+                return RedirectToAction("index");
+            }
+            catch (Exception ex)
+            {
+                //exception should be log here
+                ViewBag.ErrorMessage = ex.GetType() == typeof(CustomException) ? ex.Message : "something went wrong";
+                return View("CreateIndex");
+            }
         }
     }
 }

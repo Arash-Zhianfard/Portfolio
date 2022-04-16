@@ -3,10 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebApp.Controllers
 {
-    public class BaseGameController : Controller
+    
+    public class BasePortfolioController : Controller
     {
         private readonly IAuthService _authService;
-        public BaseGameController(IAuthService authService)
+        public BasePortfolioController(IAuthService authService)
         {
             _authService = authService;
         }

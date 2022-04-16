@@ -1,0 +1,85 @@
+﻿@model IEnumerable<Abstraction.Interfaces.Services.PortfolioItem>
+<META HTTP-EQUIV="REFRESH" CONTENT="5">
+@{
+    ViewData["Title"] = "Index";
+    var porfolioId = int.Parse(ViewData["porfolioId"].ToString());
+
+}
+
+<h1>Porfolio Items</h1>
+
+<p>
+    @Html.ActionLink("Add New Transaction", "AddTransactoionIndex","Position", new { porfolioId})
+    
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Symbol)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Price)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Quantity)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Bought)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Current)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Yield)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Symbol)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Price)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Quantity)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Bought)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Current)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Yield)
+                </td>
+                <td> 
+                    @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                </td>
+            </tr>
+        
+        }
+           <tr>
+               <td></td>
+               <td></td>
+               <td></td><td></td>
+                     <td>@(Model.Sum(x=>x.Bought))</td>
+               <td>@(Model.Sum(x=>x.Current))</td>
+          
+               <td>@(Model.Sum(x=>x.Yield))</td>
+              
+               
+           </tr>
+    </tbody>
+</table>

@@ -4,7 +4,7 @@ using Abstraction.Models;
 
 namespace Service.Implementation
 {
-    internal class PositionService: IPositionService
+    public class PositionService: IPositionService
     {
         private readonly IPositionRepository _positionRepository;
 
@@ -18,9 +18,9 @@ namespace Service.Implementation
             return this._positionRepository.AddAsync(entity);
         }
 
-        public Task<Position> GetAsync(string stockSymbol, int userId)
+        public Task<Position> GetAsync(string stockSymbol, int protfolioId, int userId)
         {
-            return _positionRepository.GetAsync(stockSymbol, userId);
+            return _positionRepository.GetAsync(stockSymbol, protfolioId, userId);
         }
 
         public Task<Position> UpdateAsync(Position entity)

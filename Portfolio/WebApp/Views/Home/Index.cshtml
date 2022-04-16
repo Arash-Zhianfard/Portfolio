@@ -1,8 +1,38 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model IEnumerable<Abstraction.Models.Portfolio>
+
+@{
+    ViewData["Title"] = "Index";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<h1>User's Porfolio</h1>
+
+<p>
+    <a asp-action="CreateIndex">Create New Portfolio</a>
+</p>
+<table class="table">
+    <thead>
+    <th>
+            @Html.DisplayNameFor(model => model.Name)
+    </th>
+    <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+
+                @Html.HiddenFor(modelItem => item.Id)
+
+                <td>
+
+                    @Html.ActionLink("ShowItms", "index","Portfolio", new { id=item.Id})
+
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

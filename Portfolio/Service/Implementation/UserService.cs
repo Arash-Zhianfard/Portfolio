@@ -1,15 +1,10 @@
 ﻿using Abstraction.Interfaces.Repositories;
 using Abstraction.Interfaces.Services;
 using Abstraction.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Service.Implementation
 {
-    internal class UserService : IUserService
+    public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
 

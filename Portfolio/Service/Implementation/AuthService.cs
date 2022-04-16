@@ -10,7 +10,7 @@ namespace Service.Implementation
 {
     public class AuthService : IAuthService
     {
- 
+
         private readonly JwtSetting _JwtSetting;
         private readonly IUserService _userService;
         private readonly IEncryptService _encryptService;
@@ -44,6 +44,7 @@ namespace Service.Implementation
             {
                 UserName = signupRequest.Username,
                 Password = encryptedPass,
+                Email = signupRequest.Email
             });
 
             if (userInfo != null)
@@ -76,7 +77,7 @@ namespace Service.Implementation
         {
             if (authToken == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentException("token should be provided");
             }
             var tokenHandler = new JwtSecurityTokenHandler();
             var userid = tokenHandler.ReadJwtToken(authToken)?.Claims?.FirstOrDefault(x => x.Type == "userid").Value;

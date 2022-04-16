@@ -21,11 +21,18 @@ namespace Repository.Repositories
                         join port in _appDbContext.Portfolios
                         on user.Id equals port.UserId
                         join posi in _appDbContext.Positions
-                        on port.PostionId equals posi.Id
+                        on port.Id equals posi.PortfolioId
                         join stck in _appDbContext.Stocks
                         on posi.StockId equals stck.Id
-                        where user.Id == userId && stck.Symbol == symbol
-                        select stck;
+                        where user.Id == userId && stck.Symbol.ToLower() == symbol.ToLower()
+                        select new Stock()
+                        {
+                            Id = user.Id,
+                            Symbol = stck.Symbol,
+                            Isin = stck.Isin,
+                            Name = stck.Name,
+                            Positions = new List<Position> { posi }
+                        };
             var result = await query.FirstOrDefaultAsync();
             return result;
         }

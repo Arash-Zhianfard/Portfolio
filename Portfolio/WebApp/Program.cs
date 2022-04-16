@@ -1,3 +1,4 @@
+using System.Globalization;
 using WebApp;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +15,27 @@ builder.Services.AddCustomServices(configuration);
 
 
 var app = builder.Build();
+CultureInfo customCulture = new CultureInfo("en-US");
+
+customCulture.NumberFormat.NumberDecimalSeparator = ".";
+
+CultureInfo.DefaultThreadCurrentCulture = customCulture;
+CultureInfo.DefaultThreadCurrentUICulture = customCulture;
+
+app.UseRequestLocalization(new RequestLocalizationOptions
+{
+    DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture(customCulture)
+,
+    SupportedCultures = new List<CultureInfo>
+        {
+            customCulture
+        },
+    SupportedUICultures = new List<CultureInfo>
+        {
+            customCulture
+        }
+}) ;
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -23,10 +45,15 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseSwagger();
-app.UseSwaggerUI(c =>
+app.UseSession();
+app.Use(async (context, next) =>
 {
-    c.SwaggerEndpoint("/swagger/v1.1/swagger.json", "Values Api V1");
+    var token = context.Session.GetString("Token");
+    if (!string.IsNullOrEmpty(token))
+    {
+        context.Request.Headers.Add("Authorization", "Bearer " + token);
+    }
+    await next();
 });
 
 app.UseHttpsRedirection();
@@ -38,6 +65,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Auth}/{action=SignUpIndex}/{id?}");
 
 app.Run();

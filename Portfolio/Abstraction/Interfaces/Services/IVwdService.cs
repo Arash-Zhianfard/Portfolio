@@ -4,6 +4,7 @@ namespace Abstraction.Interfaces.Services
 {
     public interface IVwdService
     {
-        Task<VwdResponse> GetAsync(string[] vwdKey);
+        Task<List<VwdResponse>> GetAsync(List<string> vwdKeys);
+        Task<VwdResponse> GetAsync(string vwdKey);
     }
 }

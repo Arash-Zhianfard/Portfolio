@@ -1,16 +1,10 @@
 ﻿using Abstraction.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Abstraction.Interfaces.Services
 {
     public interface IExchangeService
     {
-        Task<Position> Sell(SellRequest sellRequest);
-        Task<Position> AddPostion(PositionRequest positionRequest);
-        Task Buy(BuyRequest buyRequest);
+        Task<Position> RemovePosition(SellRequest sellRequest);
+        Task<Position> AddPosition(PositionRequest positionRequest);
     }
 }

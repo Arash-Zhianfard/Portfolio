@@ -1,5 +1,4 @@
 ﻿using Abstraction.Interfaces.Repositories;
-using Abstraction.Interfaces.Services;
 using Abstraction.Models;
 using Microsoft.EntityFrameworkCore;
 using Repository.BaseRepository;

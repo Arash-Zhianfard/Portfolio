@@ -4,7 +4,7 @@
     {
         public RequestOption()
         {
-            QueryStringItems = new List<KeyValuePair<string, string>>);
+            QueryStringItems = new List<KeyValuePair<string, string>>();
             HeaderParameters = new Dictionary<string, string>();
         }
         public string Url { get; set; }

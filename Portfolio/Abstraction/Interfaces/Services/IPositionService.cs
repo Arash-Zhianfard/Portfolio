@@ -6,6 +6,6 @@ namespace Abstraction.Interfaces.Services
     {
         Task<Position> AddAsync(Position entity);
         Task<Position> UpdateAsync(Position entity);
-        Task<Position> GetAsync(string stockSymbol, int userId);
+        Task<Position> GetAsync(string stockSymbol,int protfolioId, int userId);
     }
 }
