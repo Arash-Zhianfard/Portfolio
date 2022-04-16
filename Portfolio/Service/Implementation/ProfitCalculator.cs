@@ -9,15 +9,15 @@ namespace Service.Implementation
         public double CalcTotalProfit(List<Position> positions, double currentPrice)
         {
             double totalProfit = 0;
-            int currentAssetCount=0;
+            int currentAssetCount = 0;
             var orderdPostion = positions.OrderByDescending(x => x.CreateAt);
-            if (positions == null || !positions.Any()) 
+            if (positions == null || !positions.Any())
                 throw new ArgumentNullException(nameof(positions));
             foreach (var item in positions)
             {
-                if (item.TransactionType == TransactionType.Buy) 
+                if (item.TransactionType == TransactionType.Buy)
                 {
-                    totalProfit += (currentPrice - item.Price);
+                    totalProfit += CalcProfit(item.Price, currentPrice);
                     currentAssetCount += item.Contract;
                 }
                 else if (item.TransactionType == TransactionType.sell)
@@ -26,7 +26,7 @@ namespace Service.Implementation
                     if (currentAssetCount == 0) break;
                 }
             }
-            return 0;
+            return totalProfit;
         }
         public double CalcProfit(double boughtPrice, double currentPrice)
         {
