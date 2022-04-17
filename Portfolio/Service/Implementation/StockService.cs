@@ -6,21 +6,31 @@ namespace Service.Implementation
 {
     public class StockService : IStockService
     {
-        private readonly IStockRepository stockRepository;
+        private readonly IStockRepository _stockRepository;
 
         public StockService(IStockRepository stockRepository)
         {
-            this.stockRepository = stockRepository;
+            this._stockRepository = stockRepository;
+        }
+
+        public Task<Stock?> GetAsync(int id)
+        {
+            return _stockRepository.GetAsync(id);
         }
 
         public Task<Stock> AddAsync(Stock entity)
         {
-            return this.stockRepository.AddAsync(entity);
+            return this._stockRepository.AddAsync(entity);
         }
 
-        public Task<Stock?> GetAsync(string symbol, int userId)
+        public async Task DeleteAsync(Stock stock)
         {
-            return this.stockRepository.GetAsync(symbol, userId);
+            await _stockRepository.DeleteAsync(stock);
+        }
+
+        public Task<Stock?> GetAsync(string symbol, int userId,int portfolioId)
+        {
+            return this._stockRepository.GetAsync(symbol, userId, portfolioId);
         }
     }
 }

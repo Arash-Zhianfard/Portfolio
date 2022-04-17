@@ -30,7 +30,7 @@ namespace Test
             };
             _stockService = new Mock<IStockService>();
             _positionService = new Mock<IPositionService>();
-            _stockService.Setup(x => x.GetAsync("StockName", It.IsAny<int>())).ReturnsAsync(new Stock() { Id = 1, Positions = new List<Position> { position } });
+            _stockService.Setup(x => x.GetAsync("StockName", It.IsAny<int>(),It.IsAny<int>())).ReturnsAsync(new Stock() { Id = 1, Positions = new List<Position> { position } });
             _positionService.Setup(x => x.GetAsync("StockName", It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(position);
             _wdService = new Mock<IVwdService>();

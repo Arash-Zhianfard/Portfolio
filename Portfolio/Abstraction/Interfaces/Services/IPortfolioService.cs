@@ -6,6 +6,8 @@ namespace Abstraction.Interfaces.Services
     {
         Task<Portfolio> AddAsync(Portfolio entity);
         Task<ICollection<Portfolio>> GetByUserId(int userId);
-        Task<ICollection<PortfolioItem>> Get(int protfolioId);
+        Task<ICollection<PortfolioItem>> Get(int portfolioId);
+        Task<Portfolio> GetPortfolio(int id);
+        Task Delete(Portfolio portfolio);
     }
 }

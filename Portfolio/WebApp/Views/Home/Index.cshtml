@@ -12,27 +12,27 @@
 <table class="table">
     <thead>
     <th>
-            @Html.DisplayNameFor(model => model.Name)
+        @Html.DisplayNameFor(model => model.Name)
     </th>
     <th>Action</th>
-    </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Name)
-                </td>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
 
-                @Html.HiddenFor(modelItem => item.Id)
+            @Html.HiddenFor(modelItem => item.Id)
 
-                <td>
+            <td>
 
-                    @Html.ActionLink("ShowItms", "index","Portfolio", new { id=item.Id})
+                @Html.ActionLink("ShowItms", "index","Portfolio", new { id=item.Id})
+                @Html.ActionLink("Delete", "Delete","Portfolio", new {  id=item.Id })
+            </td>
 
-                </td>
-            </tr>
-        }
+        </tr>
+    }
     </tbody>
 </table>

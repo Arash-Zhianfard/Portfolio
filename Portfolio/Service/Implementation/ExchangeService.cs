@@ -24,7 +24,7 @@ namespace Service.Implementation
                 throw new CustomException("values Should be greater than zero");
             }
             Stock? stock = null;
-            stock = await _stockService.GetAsync(positionRequest.Symbol, positionRequest.UserId);
+            stock = await _stockService.GetAsync(positionRequest.Symbol, positionRequest.UserId, positionRequest.PortfolioId);
             if (stock == null) throw new CustomException("No symbol found");
             if (stock.CurrentAssetContract < positionRequest.Contract)
             {
@@ -52,36 +52,26 @@ namespace Service.Implementation
 
         public async Task<Position> AddPosition(PositionRequest positionRequest)
         {
-            Stock? stock = null;
-            Stock? newStock = null;
-            stock = await _stockService.GetAsync(positionRequest.Symbol, positionRequest.UserId);
-            if (stock == null)
+            var oldStock = await _stockService.GetAsync(positionRequest.Symbol, positionRequest.UserId, positionRequest.PortfolioId);
+            if (oldStock == null)
             {
                 var onlineStockInfo = await _vwdService.GetAsync(positionRequest.Symbol);
                 if (string.IsNullOrEmpty(onlineStockInfo.Name)) throw new CustomException("symbol not found");
-                newStock = new Stock()
+                var newStock = new Stock()
                 {
                     Name = onlineStockInfo.Name,
                     Isin = onlineStockInfo.Isin,
                     Symbol = onlineStockInfo.VwdKey
                 };
-            }
-            else
-            {
-                newStock = new Stock()
-                {
-                    Name = stock.Name,
-                    Isin = stock.Isin,
-                    Symbol = stock.Symbol
-                };
+                oldStock = await _stockService.AddAsync(newStock);
             }
             var euro = await _currencyConvertor.Convert(positionRequest.CurrencyName, "EUR");
             var priceInEuro = GetPriceInEuro(positionRequest.Price, euro);
-            var addedStock = await _stockService.AddAsync(newStock);
+
             var position = await _positionService.AddAsync(new Position()
             {
                 PortfolioId = positionRequest.PortfolioId,
-                StockId = addedStock.Id,
+                StockId = oldStock.Id,
                 Contract = positionRequest.Contract,
                 Price = priceInEuro,
                 Bought = priceInEuro * positionRequest.Contract,

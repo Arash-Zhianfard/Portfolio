@@ -31,7 +31,7 @@ namespace Service.Implementation
             {
                 return portfolioItems;
             }
-            foreach (var item in portfolio.Positions)
+            foreach (var item in portfolio.Positions.DistinctBy(x => x.Stock.Symbol))
             {
                 stockList.Add(item.Stock.Symbol);
             }
@@ -44,14 +44,17 @@ namespace Service.Implementation
                 {
                     if (item.Key == onlineItem.VwdKey)
                     {
+                        var currentAssetContract = GetCurrentAssetContract(item);
                         portfolioItems.Add(new PortfolioItem
                         {
+                            PositionId = item.First().Id,
+                            StockId = item.First().StockId,
                             Symbol = item.FirstOrDefault()?.Stock.Symbol ?? "",
                             Price = double.Parse(onlineItem.Price.ToString("#.##")),
                             Name = item.FirstOrDefault()?.Stock.Name ?? "",
-                            Bought = double.Parse(item.OrderByDescending(x => x.CreateAt).FirstOrDefault().Bought.ToString("#.##")) * item.First().Stock.CurrentAssetContract,
-                            Current = double.Parse((onlineItem.Price * item.First().Stock.CurrentAssetContract).ToString("#.##")),
-                            Quantity = double.Parse(item.First().Stock.CurrentAssetContract.ToString("#.##")),
+                            Bought = double.Parse(item.OrderByDescending(x => x.CreateAt).First().Bought.ToString("#.##")) * currentAssetContract,
+                            Current = double.Parse((onlineItem.Price * currentAssetContract).ToString("#.##")),
+                            Quantity = currentAssetContract,
                             Yield = double.Parse(_profitCalculator.CalcTotalProfit(item.ToList(), onlineItem.Price).ToString("#.##"))
                         });
                         break;
@@ -59,6 +62,23 @@ namespace Service.Implementation
                 }
             }
             return portfolioItems;
+        }
+
+        private int GetCurrentAssetContract(IGrouping<string, Position> item)
+        {
+            var currentAssetContract =
+                item.Where(x => x.TransactionType == TransactionType.Buy).Sum(x => x.Contract) -
+                item.Where(x => x.TransactionType == TransactionType.Sell).Sum(x => x.Contract);
+            return currentAssetContract;
+        }
+
+        public Task<Portfolio> GetPortfolio(int id)
+        {
+            return _portfolioRepository.GetAsync(id);
+        }
+        public Task Delete(Portfolio portfolio)
+        {
+            return _portfolioRepository.DeleteAsync(portfolio);
         }
 
         public Task<ICollection<Portfolio>> GetByUserId(int userId)

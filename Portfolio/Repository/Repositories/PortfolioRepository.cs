@@ -1,4 +1,5 @@
-﻿using Abstraction.Interfaces.Repositories;
+﻿using System.Linq;
+using Abstraction.Interfaces.Repositories;
 using Abstraction.Models;
 using Microsoft.EntityFrameworkCore;
 using Repository.BaseRepository;
@@ -23,8 +24,8 @@ namespace Repository.Repositories
 
         public async Task<Portfolio?> GetPortfolioItems(int portfolioId)
         {
-            var result = await _appDbContext.Portfolios.Include(x => x.Positions).ThenInclude(x => x.Stock).FirstOrDefaultAsync();
-            return result;
+            var result = _appDbContext.Portfolios.Include(x => x.Positions).ThenInclude(x => x.Stock);
+            return result.FirstOrDefault(x => Enumerable.Any<Position>(x.Positions, x=>x.PortfolioId==portfolioId));
         }
     }
 }

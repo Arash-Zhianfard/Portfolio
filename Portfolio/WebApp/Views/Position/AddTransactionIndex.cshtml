@@ -36,9 +36,9 @@
                 </select>
                 <span asp-validation-for="Type" class="text-danger"></span>
             </div>
-              <div class="form-group">
+            <div class="form-group">
                 <label asp-for="Currencies" class="control-label"></label>
-                 @Html.DropDownList("CurrencyId", Model.Currencies)
+                @Html.DropDownList("CurrencyId", Model.Currencies)
                 <span asp-validation-for="CurrencyId" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -49,7 +49,7 @@
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    @Html.ActionLink("back to portfolio", "Index","Portfolio", new {  id=Model.PortfolioId})
 </div>
 
 @section Scripts {

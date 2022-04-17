@@ -13,15 +13,19 @@ namespace WebApp.Controllers
     {
         private readonly IExchangeService _exchangeService;
         private readonly ICurrencyConvertor _currencyConvertor;
-        public PositionController(IExchangeService exchangeService, IAuthService authService, ICurrencyConvertor currencyConvertor) : base(authService)
+        private readonly IPositionService _positionService;
+        private readonly IStockService _stockService;
+        public PositionController(IExchangeService exchangeService, IAuthService authService, ICurrencyConvertor currencyConvertor, IPositionService positionService, IStockService stockService) : base(authService)
         {
             _exchangeService = exchangeService;
             _currencyConvertor = currencyConvertor;
+            _positionService = positionService;
+            _stockService = stockService;
         }
         public async Task<IActionResult> AddTransactionIndex(int portfolioId)
         {
             var currencyList = await _currencyConvertor.GetListAsync();
-            return View(new TransactionRequest { PortfolioId = 1, Currencies = GetSelectListItems(currencyList) }); ;
+            return View(new TransactionRequest { PortfolioId = portfolioId, Currencies = GetSelectListItems(currencyList) }); ;
         }
         public async Task<IActionResult> AddTransaction(TransactionRequest transactionRequest)
         {
@@ -65,11 +69,20 @@ namespace WebApp.Controllers
                 //exception should be log here
                 ViewBag.ErrorMessage = ex.GetType() == typeof(CustomException) ? ex.Message : "something went wrong";
                 var currencyList = await _currencyConvertor.GetListAsync();
-                return View("AddTransactionIndex", new TransactionRequest { PortfolioId = 1, Currencies = GetSelectListItems(currencyList) })
+                return View("AddTransactionIndex", new TransactionRequest { PortfolioId = transactionRequest.PortfolioId, Currencies = GetSelectListItems(currencyList) })
               ;
             }
         }
+        public async Task<IActionResult> Delete(int stockId,int portfolioId)
+        {
+            var stock = await _stockService.GetAsync(stockId);
+            if (stock == null)
+                throw new CustomException("no stock found In this portfolio");
 
+            await _stockService.DeleteAsync(stock);
+
+            return RedirectToAction("Index", "portfolio", new { id = portfolioId });
+        }
         private IEnumerable<SelectListItem> GetSelectListItems(IEnumerable<CurrencyItem> elements)
         {
             var selectList = new List<SelectListItem>();
