@@ -30,10 +30,10 @@ namespace WebApp.Controllers
                 if (!ModelState.IsValid)
                 {
                     ViewBag.ErrorMessage = ModelState.ToErrorMessage();
-                    return View("AddTransactionIndex", new { transactionRequest.PortfolioId });
+                    return View("AddTransactionIndex", new TransactionRequest { PortfolioId = transactionRequest.PortfolioId });
                 }
                 var currencyItems = await _currencyConvertor.GetListAsync();
-                var currencyName = currencyItems.Where(x => x.Id == transactionRequest.CurrencyId).FirstOrDefault().Name;
+                var currencyName = currencyItems.FirstOrDefault(x => x.Id == transactionRequest.CurrencyId)?.Name;
                 if (transactionRequest.Type == TransactionType.Buy)
                 {
                     await _exchangeService.AddPosition(new PositionRequest()
@@ -43,7 +43,7 @@ namespace WebApp.Controllers
                         PortfolioId = transactionRequest.PortfolioId,
                         Symbol = transactionRequest.Symbol,
                         UserId = UserId,
-                        CurrencyName = currencyName
+                        CurrencyName = currencyName 
                     });
                 }
                 else

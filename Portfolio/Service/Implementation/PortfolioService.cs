@@ -22,14 +22,14 @@ namespace Service.Implementation
             return _portfolioRepository.AddAsync(entity);
         }
 
-        public async Task<ICollection<PortfolioItem>> Get(int protfolioId)
+        public async Task<ICollection<PortfolioItem>> Get(int portfolioId)
         {
-            List<PortfolioItem> lst = new List<PortfolioItem>();
-            var portfolio = await _portfolioRepository.GetPortfolioItems(protfolioId);
+            List<PortfolioItem> portfolioItems = new List<PortfolioItem>();
+            var portfolio = await _portfolioRepository.GetPortfolioItems(portfolioId);
             var stockList = new List<string>();
             if (portfolio == null || !portfolio.Positions.Any())
             {
-                return lst;
+                return portfolioItems;
             }
             foreach (var item in portfolio.Positions)
             {
@@ -44,23 +44,21 @@ namespace Service.Implementation
                 {
                     if (item.Key == onlineItem.VwdKey)
                     {
-                        lst.Add(new PortfolioItem
+                        portfolioItems.Add(new PortfolioItem
                         {
-
                             Symbol = item.FirstOrDefault()?.Stock.Symbol ?? "",
                             Price = double.Parse(onlineItem.Price.ToString("#.##")),
                             Name = item.FirstOrDefault()?.Stock.Name ?? "",
-                            Bought = double.Parse(item.OrderByDescending(x => x.TransactionType).FirstOrDefault().Bought.ToString("#.##")),
-                            Current = double.Parse((onlineItem.Price * item.Sum(x => x.Contract)).ToString("#.##")),
-                            Quantity = double.Parse((item.Where(x => x.TransactionType == TransactionType.Buy).Sum(x => x.Contract) - item.Where(x => x.TransactionType == TransactionType.Sell).Sum(x => x.Contract)).ToString("#.##")),
+                            Bought = double.Parse(item.OrderByDescending(x => x.CreateAt).FirstOrDefault().Bought.ToString("#.##")) * item.First().Stock.CurrentAssetContract,
+                            Current = double.Parse((onlineItem.Price * item.First().Stock.CurrentAssetContract).ToString("#.##")),
+                            Quantity = double.Parse(item.First().Stock.CurrentAssetContract.ToString("#.##")),
                             Yield = double.Parse(_profitCalculator.CalcTotalProfit(item.ToList(), onlineItem.Price).ToString("#.##"))
                         });
                         break;
                     }
                 }
             }
-
-            return lst;
+            return portfolioItems;
         }
 
         public Task<ICollection<Portfolio>> GetByUserId(int userId)
