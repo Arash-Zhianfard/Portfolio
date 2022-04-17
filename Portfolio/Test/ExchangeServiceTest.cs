@@ -22,7 +22,6 @@ namespace Test
             _currencyConvertor.Setup(x => x.Convert(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(2);
             var position = new Position()
             {
-                Bought = 100,
                 Contract = 20,
                 Id = 1,
                 Stock = new Stock() { Id = 1, Isin = "123", Name = "StockName", Symbol = "Symbol1" },

@@ -1,6 +1,5 @@
 ﻿using Abstraction.Interfaces.Repositories;
 using Abstraction.Models;
-using Microsoft.EntityFrameworkCore;
 using Repository.BaseRepository;
 
 namespace Repository.Repositories
@@ -31,7 +30,6 @@ namespace Repository.Repositories
                             Contract = posi.Contract,
                             StockId = posi.StockId,
                             PortfolioId = posi.PortfolioId,
-                            Bought = posi.Bought,
                             TransactionType = posi.TransactionType,
                             Stock = stck,
                             Price = posi.Price
@@ -46,15 +44,10 @@ namespace Repository.Repositories
             }).FirstOrDefault();
             return result;
         }
-
-   
-
         public async Task DeleteRange(List<Stock> stock)
         {
             _appDbContext.Stocks.RemoveRange(stock);
             await _appDbContext.SaveChangesAsync();
         }
-
-
     }
 }

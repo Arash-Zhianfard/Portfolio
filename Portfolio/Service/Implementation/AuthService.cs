@@ -11,14 +11,14 @@ namespace Service.Implementation
     public class AuthService : IAuthService
     {
 
-        private readonly JwtSetting _JwtSetting;
+        private readonly JwtSetting _jwtSetting;
         private readonly IUserService _userService;
         private readonly IEncryptService _encryptService;
 
         public AuthService(IUserService userService, IOptions<JwtSetting> jwtSetting, IEncryptService encryptService)
         {
             _userService = userService;
-            _JwtSetting = jwtSetting.Value;
+            _jwtSetting = jwtSetting.Value;
             _encryptService = encryptService;
         }
 
@@ -61,7 +61,7 @@ namespace Service.Implementation
         private JwtInfo GenereateToken(Claim[] claims)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_JwtSetting.SecretKey);
+            var key = Encoding.ASCII.GetBytes(_jwtSetting.SecretKey);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
@@ -94,7 +94,7 @@ namespace Service.Implementation
                     ValidateLifetime = true,
                     ValidateAudience = false,
                     ValidateIssuer = false,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_JwtSetting.SecretKey))
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSetting.SecretKey))
                 };
 
                 SecurityToken validatedToken;

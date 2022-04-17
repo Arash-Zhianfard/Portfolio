@@ -52,7 +52,7 @@ namespace Service.Implementation
                             Symbol = item.FirstOrDefault()?.Stock.Symbol ?? "",
                             Price = double.Parse(onlineItem.Price.ToString("#.##")),
                             Name = item.FirstOrDefault()?.Stock.Name ?? "",
-                            Bought = double.Parse(item.OrderByDescending(x => x.CreateAt).First().Bought.ToString("#.##")) * currentAssetContract,
+                            Bought = double.Parse(item.OrderByDescending(x => x.CreateAt).First().Price.ToString("#.##")) * currentAssetContract,
                             Current = double.Parse((onlineItem.Price * currentAssetContract).ToString("#.##")),
                             Quantity = currentAssetContract,
                             Yield = double.Parse(_profitCalculator.CalcTotalProfit(item.ToList(), onlineItem.Price).ToString("#.##"))

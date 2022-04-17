@@ -1,5 +1,4 @@
-﻿using Abstraction.Interfaces.Services;
-using Abstraction.Models;
+﻿using Abstraction.Models;
 
 namespace Abstraction.Interfaces.Repositories
 {

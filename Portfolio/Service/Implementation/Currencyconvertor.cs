@@ -7,12 +7,12 @@ namespace Service.Implementation
 {
     public class CurrencyConvertor : ICurrencyConvertor
     {
-        private IApiCaller _ApiCaller;
-        private ConvertCurrencyApiSetting _ConvertCurrencyApiSetting;
+        private IApiCaller _apiCaller;
+        private ConvertCurrencyApiSetting _convertCurrencyApiSetting;
         public CurrencyConvertor(IApiCaller apiCaller, IOptions<ConvertCurrencyApiSetting> options)
         {
-            _ApiCaller = apiCaller;
-            _ConvertCurrencyApiSetting= options.Value;
+            _apiCaller = apiCaller;
+            _convertCurrencyApiSetting= options.Value;
         }
         public async Task<double> Convert(string from, string to)
         {
@@ -20,10 +20,10 @@ namespace Service.Implementation
             response.Add(new KeyValuePair<string, string>("q", from + '_' + to));
             response.Add(new KeyValuePair<string, string>("compact", "ultra"));
             
-            response.Add(new KeyValuePair<string, string>("apiKey", _ConvertCurrencyApiSetting.ApiKey));
-            var result = await _ApiCaller.GetAsync<ConvertCurrencyResponse>(new RequestOption
+            response.Add(new KeyValuePair<string, string>("apiKey", _convertCurrencyApiSetting.ApiKey));
+            var result = await _apiCaller.GetAsync<ConvertCurrencyResponse>(new RequestOption
             {
-                Url = _ConvertCurrencyApiSetting.BaseUrl + "/convert",
+                Url = _convertCurrencyApiSetting.BaseUrl + "/convert",
                 QueryStringItems = response,
             });
             return result.Value;

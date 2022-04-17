@@ -56,10 +56,10 @@ namespace Test
                     {
                     Id=1,
                     PortfolioId=1,
-                    Bought=100,
                     Contract=2,
                     StockId=1,
                     CreateAt=System.DateTime.Now.AddDays(-1),
+                    Price = 100,
                     Stock=new Stock
                     {
                     Id=1,
@@ -71,7 +71,7 @@ namespace Test
                     {
                     Id=2,
                     PortfolioId=1,
-                    Bought=400,
+                    Price = 200,
                     Contract=3,
                     StockId=1,
                     CreateAt=System.DateTime.Now.AddDays(-2),
@@ -85,9 +85,9 @@ namespace Test
             new Position()
                     {
                     Id=2,
+                    Price = 200,
                     CreateAt=System.DateTime.MinValue,
                     PortfolioId=1,
-                    Bought=900,
                     Contract=4,
                     StockId=2,
                     Stock=new Stock
@@ -127,7 +127,7 @@ namespace Test
             List<PortfolioItem> expect = new List<PortfolioItem>
             {
             new PortfolioItem {
-                Bought= 100,
+                Bought= 500,
                 Yield=1,
                 Current=400,
                 Name="stock1",
@@ -137,7 +137,7 @@ namespace Test
 
             },
             new PortfolioItem{
-                Bought= 900,
+                Bought= 800,
                 Yield=1,
                 Current=800,
                 Name="stock2",
@@ -147,8 +147,8 @@ namespace Test
             }};
             var _portfolioService = new PortfolioService(_portfolioRepository.Object, _wdService.Object, _profitCalculator.Object);
             //act
-            var protItem = _portfolioService.Get(1).Result;
-            CollectionAssert.AreEqual(protItem, expect);
+            var pottItem = _portfolioService.Get(1).Result;
+            CollectionAssert.AreEqual(pottItem, expect);
         }
 
     }

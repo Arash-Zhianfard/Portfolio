@@ -38,7 +38,6 @@ namespace Service.Implementation
                 StockId = stock.Id,
                 Contract = positionRequest.Contract,
                 Price = pricInEuro,
-                Bought = pricInEuro * positionRequest.Contract,
                 TransactionType = TransactionType.Sell
             });
             return position;
@@ -74,7 +73,6 @@ namespace Service.Implementation
                 StockId = oldStock.Id,
                 Contract = positionRequest.Contract,
                 Price = priceInEuro,
-                Bought = priceInEuro * positionRequest.Contract,
             });
             return position;
 

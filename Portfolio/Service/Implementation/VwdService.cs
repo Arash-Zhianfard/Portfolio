@@ -8,12 +8,12 @@ namespace Service.Implementation
     public class VwdService : IVwdService
     {
         private readonly IApiCaller _apiCaller;
-        private readonly VwdServicesApiSetting _vwdservicesApiSetting;
+        private readonly VwdServicesApiSetting _vwdServicesApiSetting;
 
         public VwdService(IApiCaller apiCaller, IOptions<VwdServicesApiSetting> options)
         {
             _apiCaller = apiCaller;
-            _vwdservicesApiSetting = options.Value;
+            _vwdServicesApiSetting = options.Value;
         }
         public async Task<List<VwdResponse>> GetAsync(List<string> vwdKeys)
         {
@@ -24,7 +24,7 @@ namespace Service.Implementation
             }
             var result =await _apiCaller.GetAsync<List<VwdResponse>>(new RequestOption
             {
-                Url = _vwdservicesApiSetting.BaseUrl,
+                Url = _vwdServicesApiSetting.BaseUrl,
                 QueryStringItems = response,
             });
             return result;
@@ -34,7 +34,7 @@ namespace Service.Implementation
 
             var result =await _apiCaller.GetAsync<VwdResponse>(new RequestOption
             {
-                Url = _vwdservicesApiSetting.BaseUrl +"/"+ vwdKeys
+                Url = _vwdServicesApiSetting.BaseUrl +"/"+ vwdKeys
             });
 
             return result;
