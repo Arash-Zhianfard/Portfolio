@@ -8,30 +8,24 @@ namespace Service.Implementation
     {
         public double CalcTotalProfit(List<Position> positions, double currentPrice)
         {
-            double totalProfit = 0;
-            int currentAssetCount = 0;
-            var orderdPostion = positions.OrderByDescending(x => x.CreateAt);
             if (positions == null || !positions.Any())
                 throw new ArgumentNullException(nameof(positions));
-            foreach (var item in positions)
-            {
-                if (item.TransactionType == TransactionType.Buy)
-                {
-                    totalProfit += CalcProfit(item.Price, currentPrice);
-                    currentAssetCount += item.Contract;
-                }
-                else if (item.TransactionType == TransactionType.sell)
-                {
-                    currentAssetCount -= item.Contract;
-                    if (currentAssetCount == 0) break;
-                }
-            }
-            return totalProfit;
-        }
-        public double CalcProfit(double boughtPrice, double currentPrice)
-        {
-            var yeild = ((currentPrice * 100) / boughtPrice) - 100;
-            return yeild;
+
+            var currentAssetCount = positions.Where(x => x.TransactionType == TransactionType.Buy).Sum(x => x.Contract) -
+                                    positions.Where(x => x.TransactionType == TransactionType.Sell).Sum(x => x.Contract);
+
+            //the current profit should be zero because currently user has no asset
+            if (currentAssetCount == 0)
+                return 0;
+
+            var buyCost = positions.Where(x => x.TransactionType == TransactionType.Buy).Sum(x => x.Price * x.Contract) -
+                          positions.Where(x => x.TransactionType == TransactionType.Sell).Sum(x => x.Price * x.Contract);
+
+            var breakevenPrice = buyCost / currentAssetCount;
+
+            var totalProfit = (currentPrice - breakevenPrice) * currentAssetCount / buyCost * 100;
+
+            return Math.Round(totalProfit, 2);
         }
     }
 }

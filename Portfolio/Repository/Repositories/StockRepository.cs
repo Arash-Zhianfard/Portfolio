@@ -15,7 +15,7 @@ namespace Repository.Repositories
             this._appDbContext = db;
         }
 
-        public async Task<Stock> GetAsync(string symbol, int userId)
+        public async Task<Stock?> GetAsync(string symbol, int userId)
         {
             var query = from user in _appDbContext.Users
                         join port in _appDbContext.Portfolios

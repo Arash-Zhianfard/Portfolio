@@ -3,6 +3,6 @@
     public enum TransactionType
     {
         Buy,
-        sell
+        Sell
     }
 }

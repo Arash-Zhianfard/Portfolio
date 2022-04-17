@@ -8,22 +8,22 @@ namespace Repository.Repositories
 
     public class PortfolioRepository : BaseRepository<Portfolio>, IPortfolioRepository
     {
-        private readonly AppDbContext appDbContext;
+        private readonly AppDbContext _appDbContext;
 
         public PortfolioRepository(AppDbContext db) : base(db)
         {
-            this.appDbContext = db;
+            this._appDbContext = db;
         }
 
         public async Task<ICollection<Portfolio>> GetByUserId(int userId)
         {
-            var result = await appDbContext.Portfolios.Where(x => x.User.Id == userId).ToListAsync();
+            var result = await _appDbContext.Portfolios.Where(x => x.User.Id == userId).ToListAsync();
             return result;
         }
 
-        public async Task<Portfolio> GetPortfolioItems(int portfolioId)
+        public async Task<Portfolio?> GetPortfolioItems(int portfolioId)
         {
-            var result = await appDbContext.Portfolios.Include(x => x.Positions).ThenInclude(x => x.Stock).FirstOrDefaultAsync();
+            var result = await _appDbContext.Portfolios.Include(x => x.Positions).ThenInclude(x => x.Stock).FirstOrDefaultAsync();
             return result;
         }
     }

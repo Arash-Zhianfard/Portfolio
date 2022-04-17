@@ -11,9 +11,9 @@ namespace Test
 {
     public class PortfolioServiceTest
     {
-        private Mock<IPortfolioRepository> _portfolioRepository;
-        private Mock<IVwdService> _wdService;
-        private Mock<IProfitCalculator> profitCalculator;
+        private Mock<IPortfolioRepository>? _portfolioRepository;
+        private Mock<IVwdService>? _wdService;
+        private Mock<IProfitCalculator>? _profitCalculator;
         [SetUp]
         public void Setup()
         {
@@ -42,9 +42,9 @@ namespace Test
                 Currency = "eur"
             }
                 }));
- 
-            profitCalculator = new Mock<IProfitCalculator>();
-            profitCalculator.Setup(x => x.CalcTotalProfit(It.IsAny<List<Position>>(), It.IsAny<double>())).Returns(1);
+
+            _profitCalculator = new Mock<IProfitCalculator>();
+            _profitCalculator.Setup(x => x.CalcTotalProfit(It.IsAny<List<Position>>(), It.IsAny<double>())).Returns(1);
 
         }
 
@@ -103,21 +103,27 @@ namespace Test
         [Test]
         public void Get_ShouldNotBeNullInCaseThereIsNoPosition()
         {
-            var _portfolioService = new PortfolioService(_portfolioRepository.Object, _wdService.Object, profitCalculator.Object);
+            //arrange
+            var _portfolioService = new PortfolioService(_portfolioRepository.Object, _wdService.Object, _profitCalculator.Object);
+            //act
             var protItem = _portfolioService.Get(1).Result;
+            //assert
             Assert.IsNotNull(protItem);
         }
         [Test]
         public void Get_ShouldReturnExpectedStockCount()
         {
+            //arrange
             const int stockCount = 2;
-            var _portfolioService = new PortfolioService(_portfolioRepository.Object, _wdService.Object, profitCalculator.Object);
+            var _portfolioService = new PortfolioService(_portfolioRepository.Object, _wdService.Object, _profitCalculator.Object);
+            //act
             var protItem = _portfolioService.Get(1).Result;
             Assert.AreEqual(protItem.Count, stockCount);
         }
         [Test]
         public void Get_ShouldReturnExpectedValues()
         {
+            //arrange
             List<PortfolioItem> expect = new List<PortfolioItem>
             {
             new PortfolioItem {
@@ -128,7 +134,7 @@ namespace Test
                 Price=80,
                 Quantity=5,
                 Symbol="symbol1",
-               
+
             },
             new PortfolioItem{
                 Bought= 900,
@@ -139,7 +145,8 @@ namespace Test
                 Quantity=4,
                 Symbol="symbol2"
             }};
-            var _portfolioService = new PortfolioService(_portfolioRepository.Object, _wdService.Object, profitCalculator.Object);
+            var _portfolioService = new PortfolioService(_portfolioRepository.Object, _wdService.Object, _profitCalculator.Object);
+            //act
             var protItem = _portfolioService.Get(1).Result;
             CollectionAssert.AreEqual(protItem, expect);
         }

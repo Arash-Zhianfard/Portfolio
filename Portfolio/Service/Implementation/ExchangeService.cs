@@ -5,7 +5,6 @@ namespace Service.Implementation
 {
     public class ExchangeService : IExchangeService
     {
-
         private readonly IStockService _stockService;
         private readonly IPositionService _positionService;
         private readonly IVwdService _vwdService;
@@ -27,22 +26,22 @@ namespace Service.Implementation
             Stock? stock = null;
             stock = await _stockService.GetAsync(sellRequest.Symbol, sellRequest.UserId);
             if (stock == null) throw new CustomException("No symbol found");
-            if (stock.Positions.Sum(x => x.Contract) < sellRequest.Contract)
+            if (stock.CurrentAssetContract < sellRequest.Contract)
             {
                 throw new CustomException("number of sell should be equal or less than current asset");
             }
             var euro = await _currencyConvertor.Convert(sellRequest.CurrencyName, "EUR");
             var pricInEuro = euro * sellRequest.Price;
-            var postition = await _positionService.AddAsync(new Position()
+            var position = await _positionService.AddAsync(new Position()
             {
                 PortfolioId = sellRequest.PortfolioId,
                 StockId = stock.Id,
                 Contract = sellRequest.Contract,
                 Price = pricInEuro,
                 Bought = pricInEuro * sellRequest.Contract,
-                TransactionType = TransactionType.sell
+                TransactionType = TransactionType.Sell
             });
-            return postition;
+            return position;
         }
 
         public async Task<Position> AddPosition(PositionRequest posistionReqeust)
@@ -73,7 +72,7 @@ namespace Service.Implementation
             var euro = await _currencyConvertor.Convert(posistionReqeust.CurrencyName, "EUR");
             var pricInEuro = euro * posistionReqeust.Price;
             var addedStock = await _stockService.AddAsync(newStock);
-            var postition = await _positionService.AddAsync(new Position()
+            var position = await _positionService.AddAsync(new Position()
             {
                 PortfolioId = posistionReqeust.PortfolioId,
                 StockId = addedStock.Id,
@@ -81,7 +80,7 @@ namespace Service.Implementation
                 Price = pricInEuro,
                 Bought = pricInEuro * posistionReqeust.Contract,
             });
-            return postition;
+            return position;
 
         }
 

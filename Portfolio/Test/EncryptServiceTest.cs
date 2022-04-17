@@ -12,8 +12,11 @@ namespace Tests
         [TestCase("abc", "900150983cd24fb0d6963f7d28e17f72")]
         public void SignIn_ShouldReturnTokenIfUserFound(string input,string expect)
         {
+            //arrange
             var jwtService = new EncryptService();
+            //act
             var result = jwtService.GenerateMd5String(input);
+            //assert
             Assert.AreEqual(result, expect);
         }
     }

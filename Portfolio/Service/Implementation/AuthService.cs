@@ -68,8 +68,8 @@ namespace Service.Implementation
                 Expires = DateTime.UtcNow.AddHours(24),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
-            var tokendes = tokenHandler.CreateToken(tokenDescriptor);
-            var token = tokenHandler.WriteToken(tokendes);
+            var tokens = tokenHandler.CreateToken(tokenDescriptor);
+            var token = tokenHandler.WriteToken(tokens);
             return new JwtInfo() { Token = token };
         }
 
@@ -80,8 +80,8 @@ namespace Service.Implementation
                 throw new ArgumentException("token should be provided");
             }
             var tokenHandler = new JwtSecurityTokenHandler();
-            var userid = tokenHandler.ReadJwtToken(authToken)?.Claims?.FirstOrDefault(x => x.Type == "userid").Value;
-            return new TokenInfo() { UserId = int.Parse(userid) };
+            var userid = tokenHandler.ReadJwtToken(authToken)?.Claims?.FirstOrDefault(x => x.Type == "userid")?.Value;
+            return new TokenInfo() { UserId = int.Parse(userid ?? throw new InvalidOperationException()) };
         }
 
         public bool ValidateToken(string authToken)

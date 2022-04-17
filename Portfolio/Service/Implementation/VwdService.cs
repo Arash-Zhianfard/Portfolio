@@ -8,9 +8,9 @@ namespace Service.Implementation
     public class VwdService : IVwdService
     {
         private readonly IApiCaller _apiCaller;
-        private readonly VwdservicesApiSetting _vwdservicesApiSetting;
+        private readonly VwdServicesApiSetting _vwdservicesApiSetting;
 
-        public VwdService(IApiCaller apiCaller, IOptions<VwdservicesApiSetting> options)
+        public VwdService(IApiCaller apiCaller, IOptions<VwdServicesApiSetting> options)
         {
             _apiCaller = apiCaller;
             _vwdservicesApiSetting = options.Value;

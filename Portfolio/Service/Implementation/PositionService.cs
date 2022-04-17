@@ -18,9 +18,9 @@ namespace Service.Implementation
             return this._positionRepository.AddAsync(entity);
         }
 
-        public Task<Position> GetAsync(string stockSymbol, int protfolioId, int userId)
+        public Task<Position> GetAsync(string stockSymbol, int portfolioId, int userId)
         {
-            return _positionRepository.GetAsync(stockSymbol, protfolioId, userId);
+            return _positionRepository.GetAsync(stockSymbol, portfolioId, userId);
         }
 
         public Task<Position> UpdateAsync(Position entity)

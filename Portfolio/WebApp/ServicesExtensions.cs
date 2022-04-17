@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 using Repository;
 using Repository.Repositories;
 using Service.Implementation;
@@ -21,7 +20,7 @@ namespace WebApp
         {
             var jwtSection = configurations.GetSection("JwtSetting");
             services.Configure<JwtSetting>(configurations.GetSection("jwtSetting"));
-            services.Configure<VwdservicesApiSetting>(configurations.GetSection("VwdservicesApiSetting"));
+            services.Configure<VwdServicesApiSetting>(configurations.GetSection("VwdservicesApiSetting"));
             services.Configure<ConvertCurrencyApiSetting>(configurations.GetSection("ConvertCurrencyApiSetting"));
             services.AddScoped<AuthorizeFilterAttribute>();
             services.AddScoped<ICurrencyConvertor, CurrencyConvertor>();

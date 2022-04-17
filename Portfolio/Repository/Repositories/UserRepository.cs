@@ -12,7 +12,7 @@ namespace Repository.Repositories
 
         public UserRepository(AppDbContext db) : base(db)
         {
-            this._appDbContext = db;
+            _appDbContext = db;
         }
 
         public Task<User?> GetAsync(string username)

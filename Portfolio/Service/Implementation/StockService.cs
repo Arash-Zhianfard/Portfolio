@@ -18,7 +18,7 @@ namespace Service.Implementation
             return this.stockRepository.AddAsync(entity);
         }
 
-        public Task<Stock> GetAsync(string symbol, int userId)
+        public Task<Stock?> GetAsync(string symbol, int userId)
         {
             return this.stockRepository.GetAsync(symbol, userId);
         }

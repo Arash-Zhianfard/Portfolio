@@ -1,6 +1,6 @@
 ﻿namespace Service.Model
 {
-    public class VwdservicesApiSetting
+    public class VwdServicesApiSetting
     {
         public string BaseUrl { get; set; }
     }

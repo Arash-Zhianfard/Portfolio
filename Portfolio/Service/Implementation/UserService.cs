@@ -17,12 +17,12 @@ namespace Service.Implementation
             return _userRepository.AddAsync(entity);
         }
 
-        public Task<User> GetAsync(string username, string password)
+        public Task<User?> GetAsync(string username, string password)
         {
             return _userRepository.GetAsync(username,password);
         }
 
-        public Task<User> GetAsync(string username)
+        public Task<User?> GetAsync(string username)
         {
             return _userRepository.GetAsync(username);
         }

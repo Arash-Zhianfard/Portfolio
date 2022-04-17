@@ -2,7 +2,7 @@
 <META HTTP-EQUIV="REFRESH" CONTENT="5">
 @{
     ViewData["Title"] = "Index";
-    var porfolioId = int.Parse(ViewData["porfolioId"].ToString());
+    var porfolioId = int.Parse(ViewData["porfolioId"]?.ToString() ?? "0");
 
 }
 

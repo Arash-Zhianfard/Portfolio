@@ -10,7 +10,6 @@
         public TransactionType TransactionType { get; set; }
         public Portfolio Portfolio { get; set; }
         public Stock Stock { get; set; }
-        public double Yeild { get; set; }
         public double Price { get; set; }
     }
  
