@@ -19,7 +19,7 @@ namespace Test
         {
             _portfolioRepository = new Mock<IPortfolioRepository>();
             _wdService = new Mock<IVwdService>();
-            _portfolioRepository.Setup(x => x.GetPortfolioItems(It.IsAny<int>())).ReturnsAsync(new Portfolio
+            _portfolioRepository.Setup(x => x.GetPortfolioItemsAsync(It.IsAny<int>())).ReturnsAsync(new Portfolio
             {
                 Name = "name",
                 Id = 1,
@@ -106,7 +106,7 @@ namespace Test
             //arrange
             var _portfolioService = new PortfolioService(_portfolioRepository.Object, _wdService.Object, _profitCalculator.Object);
             //act
-            var protItem = _portfolioService.Get(1).Result;
+            var protItem = _portfolioService.GetItemsAsync(1).Result;
             //assert
             Assert.IsNotNull(protItem);
         }
@@ -117,7 +117,7 @@ namespace Test
             const int stockCount = 2;
             var _portfolioService = new PortfolioService(_portfolioRepository.Object, _wdService.Object, _profitCalculator.Object);
             //act
-            var protItem = _portfolioService.Get(1).Result;
+            var protItem = _portfolioService.GetItemsAsync(1).Result;
             Assert.AreEqual(protItem.Count, stockCount);
         }
         [Test]
@@ -147,7 +147,7 @@ namespace Test
             }};
             var _portfolioService = new PortfolioService(_portfolioRepository.Object, _wdService.Object, _profitCalculator.Object);
             //act
-            var pottItem = _portfolioService.Get(1).Result;
+            var pottItem = _portfolioService.GetItemsAsync(1).Result;
             CollectionAssert.AreEqual(pottItem, expect);
         }
 

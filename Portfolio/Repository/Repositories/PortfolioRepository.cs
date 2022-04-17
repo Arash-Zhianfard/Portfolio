@@ -16,16 +16,17 @@ namespace Repository.Repositories
             this._appDbContext = db;
         }
 
-        public async Task<ICollection<Portfolio>> GetByUserId(int userId)
+        public async Task<ICollection<Portfolio>> GetByUserIdAsync(int userId)
         {
             var result = await _appDbContext.Portfolios.Where(x => x.User.Id == userId).ToListAsync();
             return result;
         }
 
-        public async Task<Portfolio?> GetPortfolioItems(int portfolioId)
+        public async Task<Portfolio?> GetPortfolioItemsAsync(int portfolioId)
         {
-            var result = _appDbContext.Portfolios.Include(x => x.Positions).ThenInclude(x => x.Stock);
-            return result.FirstOrDefault(x => Enumerable.Any<Position>(x.Positions, x=>x.PortfolioId==portfolioId));
+            var query = _appDbContext.Portfolios.Include(x => x.Positions).ThenInclude(x => x.Stock);
+            var result = await query.FirstOrDefaultAsync(x => Enumerable.Any<Position>(x.Positions, x => x.PortfolioId == portfolioId));
+            return result;
         }
     }
 }

@@ -24,7 +24,7 @@ namespace WebApp.Controllers
         }
         public async Task<IActionResult> AddTransactionIndex(int portfolioId)
         {
-            var currencyList = await _currencyConvertor.GetListAsync();
+            var currencyList =  _currencyConvertor.GetList();
             return View(new TransactionRequest { PortfolioId = portfolioId, Currencies = GetSelectListItems(currencyList) }); ;
         }
         public async Task<IActionResult> AddTransaction(TransactionRequest transactionRequest)
@@ -36,7 +36,7 @@ namespace WebApp.Controllers
                     ViewBag.ErrorMessage = ModelState.ToErrorMessage();
                     return View("AddTransactionIndex", new TransactionRequest { PortfolioId = transactionRequest.PortfolioId });
                 }
-                var currencyItems = await _currencyConvertor.GetListAsync();
+                var currencyItems =  _currencyConvertor.GetList();
                 var currencyName = currencyItems.FirstOrDefault(x => x.Id == transactionRequest.CurrencyId)?.Name;
                 if (transactionRequest.Type == TransactionType.Buy)
                 {
@@ -68,7 +68,7 @@ namespace WebApp.Controllers
             {
                 //exception should be log here
                 ViewBag.ErrorMessage = ex.GetType() == typeof(CustomException) ? ex.Message : "something went wrong";
-                var currencyList = await _currencyConvertor.GetListAsync();
+                var currencyList =  _currencyConvertor.GetList();
                 return View("AddTransactionIndex", new TransactionRequest { PortfolioId = transactionRequest.PortfolioId, Currencies = GetSelectListItems(currencyList) })
               ;
             }

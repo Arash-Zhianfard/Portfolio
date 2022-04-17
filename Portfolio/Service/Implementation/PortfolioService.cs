@@ -22,10 +22,10 @@ namespace Service.Implementation
             return _portfolioRepository.AddAsync(entity);
         }
 
-        public async Task<ICollection<PortfolioItem>> Get(int portfolioId)
+        public async Task<ICollection<PortfolioItem>> GetItemsAsync(int portfolioId)
         {
             List<PortfolioItem> portfolioItems = new List<PortfolioItem>();
-            var portfolio = await _portfolioRepository.GetPortfolioItems(portfolioId);
+            var portfolio = await _portfolioRepository.GetPortfolioItemsAsync(portfolioId);
             var stockList = new List<string>();
             if (portfolio == null || !portfolio.Positions.Any())
             {
@@ -35,27 +35,27 @@ namespace Service.Implementation
             {
                 stockList.Add(item.Stock.Symbol);
             }
-            var currentData = await _vwdService.GetAsync(stockList);
-            var groupedPositions = portfolio.Positions.GroupBy(x => x.Stock.Symbol);
+            var onlineStockData = await _vwdService.GetAsync(stockList);
+            var stockByPositions = portfolio.Positions.GroupBy(x => x.Stock.Symbol);
 
-            foreach (var item in groupedPositions)
+            foreach (var dbStockItem in stockByPositions)
             {
-                foreach (var onlineItem in currentData)
+                foreach (var onlineStockItem in onlineStockData)
                 {
-                    if (item.Key == onlineItem.VwdKey)
+                    if (dbStockItem.Key == onlineStockItem.VwdKey)
                     {
-                        var currentAssetContract = GetCurrentAssetContract(item);
+                        var currentAssetContract = GetCurrentAssetContract(dbStockItem);
                         portfolioItems.Add(new PortfolioItem
                         {
-                            PositionId = item.First().Id,
-                            StockId = item.First().StockId,
-                            Symbol = item.FirstOrDefault()?.Stock.Symbol ?? "",
-                            Price = double.Parse(onlineItem.Price.ToString("#.##")),
-                            Name = item.FirstOrDefault()?.Stock.Name ?? "",
-                            Bought = double.Parse(item.OrderByDescending(x => x.CreateAt).First().Price.ToString("#.##")) * currentAssetContract,
-                            Current = double.Parse((onlineItem.Price * currentAssetContract).ToString("#.##")),
+                            PositionId = dbStockItem.First().Id,
+                            StockId = dbStockItem.First().StockId,
+                            Symbol = dbStockItem.FirstOrDefault()?.Stock.Symbol ?? "",
+                            Price = double.Parse(onlineStockItem.Price.ToString("#.##")),
+                            Name = dbStockItem.FirstOrDefault()?.Stock.Name ?? "",
+                            Bought = double.Parse(dbStockItem.OrderByDescending(x => x.CreateAt).First().Price.ToString("#.##")) * currentAssetContract,
+                            Current = double.Parse((onlineStockItem.Price * currentAssetContract).ToString("#.##")),
                             Quantity = currentAssetContract,
-                            Yield = double.Parse(_profitCalculator.CalcTotalProfit(item.ToList(), onlineItem.Price).ToString("#.##"))
+                            Yield = double.Parse(_profitCalculator.CalcTotalProfit(dbStockItem.ToList(), onlineStockItem.Price).ToString("#.##"))
                         });
                         break;
                     }
@@ -72,18 +72,18 @@ namespace Service.Implementation
             return currentAssetContract;
         }
 
-        public Task<Portfolio> GetPortfolio(int id)
+        public Task<Portfolio> GetPortfolioAsync(int id)
         {
             return _portfolioRepository.GetAsync(id);
         }
-        public Task Delete(Portfolio portfolio)
+        public Task DeleteAsync(Portfolio portfolio)
         {
             return _portfolioRepository.DeleteAsync(portfolio);
         }
 
-        public Task<ICollection<Portfolio>> GetByUserId(int userId)
+        public Task<ICollection<Portfolio>> GetByUserIdAsync(int userId)
         {
-            return _portfolioRepository.GetByUserId(userId);
+            return _portfolioRepository.GetByUserIdAsync(userId);
         }
     }
 }

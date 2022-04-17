@@ -33,9 +33,5 @@ namespace Service.Implementation
             return _positionRepository.GetAsync(id);
         }
 
-        public Task<Position> UpdateAsync(Position entity)
-        {
-            return _positionRepository.UpdateAsync(entity);
-        }
     }
 }

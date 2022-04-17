@@ -17,7 +17,7 @@ namespace WebApp.Controllers
 
         public async Task<IActionResult> Index(int id)
         {
-            var result = await _portfolioService.Get(id);
+            var result = await _portfolioService.GetItemsAsync(id);
             ViewData["porfolioId"] = id;
             return View(result);
         }
@@ -25,12 +25,12 @@ namespace WebApp.Controllers
         
         public async Task<IActionResult> Delete(int id)
         {
-            var portfolio = await _portfolioService.GetPortfolio(id);
+            var portfolio = await _portfolioService.GetPortfolioAsync(id);
 
             if (portfolio == null)
                 throw new CustomException("Portfolio not found");
 
-            await _portfolioService.Delete(portfolio);
+            await _portfolioService.DeleteAsync(portfolio);
 
             return RedirectToAction("Index", "Home");
         }

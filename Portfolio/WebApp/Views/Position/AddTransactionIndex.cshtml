@@ -38,7 +38,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="Currencies" class="control-label"></label>
-                @Html.DropDownList("CurrencyId", Model.Currencies)
+                @Html.DropDownList("CurrencyId", Model.Currencies,new { @class="form-control" })
                 <span asp-validation-for="CurrencyId" class="text-danger"></span>
             </div>
             <div class="form-group">

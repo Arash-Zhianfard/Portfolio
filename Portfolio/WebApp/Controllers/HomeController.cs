@@ -18,7 +18,7 @@ namespace WebApp.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var result = await _portfolioService.GetByUserId(UserId);
+            var result = await _portfolioService.GetByUserIdAsync(UserId);
             return View(result);
         }
         public async Task<IActionResult> CreateIndex()

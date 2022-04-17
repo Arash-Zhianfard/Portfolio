@@ -41,48 +41,47 @@
         </tr>
     </thead>
     <tbody>
-    @foreach (var item in Model)
-    {
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Symbol)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Price)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Quantity)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Bought)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Current)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Yield)%
+                </td>
+                <td>
+                    @Html.ActionLink("Delete", "Delete","Position", new {  stockId=item.StockId ,portfolioId=item.PositionId})
+                </td>
+            </tr>
+
+        }
         <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Symbol)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Price)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Quantity)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Bought)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Current)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Yield)
-            </td>
-            <td>
-                @Html.ActionLink("Delete", "Delete","Position", new {  stockId=item.StockId ,portfolioId=item.PositionId})
-            </td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>@(Model.Sum(x=>x.Bought).ToString("#.##"))</td>
+            <td>@(Model.Sum(x=>x.Current).ToString("#.##"))</td>
+            <td>@(Model.Sum(x=>x.Yield).ToString("#.##"))%</td>
+
+
         </tr>
-
-    }
-    <tr>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td>@(Model.Sum(x=>x.Bought))</td>
-        <td>@(Model.Sum(x=>x.Current))</td>
-
-        <td>@(Model.Sum(x=>x.Yield))</td>
-
-
-    </tr>
     </tbody>
 
 </table>

@@ -31,13 +31,13 @@ namespace Service.Implementation
                 throw new CustomException("number of sell should be equal or less than current asset");
             }
             var euro = await _currencyConvertor.Convert(positionRequest.CurrencyName, "EUR");
-            var pricInEuro = GetPriceInEuro(positionRequest.Price, euro);
+            var priceInEuro = GetPriceInEuro(positionRequest.Price, euro);
             var position = await _positionService.AddAsync(new Position()
             {
                 PortfolioId = positionRequest.PortfolioId,
                 StockId = stock.Id,
                 Contract = positionRequest.Contract,
-                Price = pricInEuro,
+                Price = priceInEuro,
                 TransactionType = TransactionType.Sell
             });
             return position;
