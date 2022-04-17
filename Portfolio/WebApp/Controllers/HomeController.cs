@@ -1,6 +1,5 @@
 ﻿using Abstraction.Interfaces.Services;
 using Abstraction.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Service.Implementation;
 using WebApp.Filter;

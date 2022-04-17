@@ -1,6 +1,5 @@
 ﻿using Abstraction.Interfaces.Services;
 using Abstraction.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Service.Implementation;
@@ -12,28 +11,26 @@ namespace WebApp.Controllers
     [AuthorizeFilterAttribute]
     public class PositionController : BasePortfolioController
     {
-        private readonly IPortfolioService _portfolioService;
         private readonly IExchangeService _exchangeService;
         private readonly ICurrencyConvertor _currencyConvertor;
-        public PositionController(IPortfolioService portfolioService, IExchangeService exchangeService, IAuthService authService, ICurrencyConvertor currencyConvertor) : base(authService)
+        public PositionController(IExchangeService exchangeService, IAuthService authService, ICurrencyConvertor currencyConvertor) : base(authService)
         {
-            _portfolioService = portfolioService;
             _exchangeService = exchangeService;
             _currencyConvertor = currencyConvertor;
         }
-        public async Task<IActionResult> AddTransactoionIndex(int porfolioId)
+        public async Task<IActionResult> AddTransactionIndex(int portfolioId)
         {
             var currencyList = await _currencyConvertor.GetListAsync();
             return View(new TransactionRequest { PortfolioId = 1, Currencies = GetSelectListItems(currencyList) }); ;
         }
-        public async Task<IActionResult> AddTransactoion(TransactionRequest transactionRequest)
+        public async Task<IActionResult> AddTransaction(TransactionRequest transactionRequest)
         {
             try
             {
                 if (!ModelState.IsValid)
                 {
                     ViewBag.ErrorMessage = ModelState.ToErrorMessage();
-                    return View("AddTransactoionIndex", new { transactionRequest.PortfolioId });
+                    return View("AddTransactionIndex", new { transactionRequest.PortfolioId });
                 }
                 var currencyItems = await _currencyConvertor.GetListAsync();
                 var currencyName = currencyItems.Where(x => x.Id == transactionRequest.CurrencyId).FirstOrDefault().Name;
@@ -51,7 +48,7 @@ namespace WebApp.Controllers
                 }
                 else
                 {
-                    await _exchangeService.RemovePosition(new SellRequest()
+                    await _exchangeService.RemovePosition(new PositionRequest()
                     {
                         Price = double.Parse(transactionRequest.Price),
                         Contract = transactionRequest.Contract,
@@ -68,14 +65,11 @@ namespace WebApp.Controllers
                 //exception should be log here
                 ViewBag.ErrorMessage = ex.GetType() == typeof(CustomException) ? ex.Message : "something went wrong";
                 var currencyList = await _currencyConvertor.GetListAsync();
-                return View("AddTransactoionIndex", new TransactionRequest { PortfolioId = 1, Currencies = GetSelectListItems(currencyList) })
-              ; 
+                return View("AddTransactionIndex", new TransactionRequest { PortfolioId = 1, Currencies = GetSelectListItems(currencyList) })
+              ;
             }
         }
-        public IActionResult Index()
-        {
-            return View();
-        }
+
         private IEnumerable<SelectListItem> GetSelectListItems(IEnumerable<CurrencyItem> elements)
         {
             var selectList = new List<SelectListItem>();

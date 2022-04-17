@@ -51,8 +51,8 @@ namespace Test
                 _positionService.Object, _wdService.Object, _currencyConvertor.Object);
             //act and assert
             Assert.ThrowsAsync<CustomException>(() => exchangeService.RemovePosition(
-               new SellRequest()
-               { Contract = 21, Price = 10, Symbol = "StockName", UserId = 1 }));
+               new PositionRequest()
+                   { Contract = 21, Price = 10, Symbol = "StockName", UserId = 1 }));
         }
         [Test]
         public void Sell_ShouldThrowExceptionIfSymbolNotFound()
@@ -61,28 +61,52 @@ namespace Test
             var exchangeService = new ExchangeService(_stockService.Object, _positionService.Object, _wdService.Object, _currencyConvertor.Object);
             //act and assert
             Assert.ThrowsAsync<CustomException>(() => exchangeService.RemovePosition(
-               new SellRequest()
-               { Contract = 1, Price = 10, Symbol = "UnKnownStockName", UserId = 1 }));
+               new PositionRequest()
+                   { Contract = 1, Price = 10, Symbol = "UnKnownStockName", UserId = 1 }));
         }
         [Test]
-        public void Sell_ShouldThrowExceptionIfCotractNoGreaterthanZero()
+        public void Sell_ShouldThrowExceptionIfContractNotGreaterThanZero()
         {
             //arrange
             var exchangeService = new ExchangeService(_stockService.Object, _positionService.Object, _wdService.Object, _currencyConvertor.Object);
             //act and assert
             Assert.ThrowsAsync<CustomException>(() => exchangeService.RemovePosition(
-               new SellRequest()
-               { Contract = 0, Price = 10, Symbol = "Stack1", UserId = 1 }));
+               new PositionRequest()
+                   { Contract = 0, Price = 10, Symbol = "Stack1", UserId = 1 }));
         }
         [Test]
-        public void Sell_ShouldThrowExceptionIfPriceNoGreaterthanZero()
+        public void Sell_ShouldThrowExceptionIfPriceNotGreaterThanZero()
         {
             //arrange
             var exchangeService = new ExchangeService(_stockService.Object, _positionService.Object, _wdService.Object, _currencyConvertor.Object);
             //act and assert
             Assert.ThrowsAsync<CustomException>(() => exchangeService.RemovePosition(
-               new SellRequest()
-               { Contract = 10, Price = -10, Symbol = "Stack1", UserId = 1 }));
+               new PositionRequest()
+                   { Contract = 10, Price = -10, Symbol = "Stack1", UserId = 1 }));
+        }
+        [Test]
+        public void Add_ShouldThrowExceptionIfSymbolNotFound()
+        {
+            //arrange
+            _wdService.Setup(x => x.GetAsync(It.IsAny<string>())).ReturnsAsync(new VwdResponse()
+            {
+            });
+            var exchangeService = new ExchangeService(_stockService.Object, _positionService.Object, _wdService.Object, _currencyConvertor.Object);
+            //act and assert
+            Assert.ThrowsAsync<CustomException>(() => exchangeService.AddPosition(
+                new PositionRequest()
+                    { Contract = 1, Price = 10, Symbol = "UnKnownStockName", UserId = 1 }));
+        }
+        [Test]
+        public void GetPriceInEuro()
+        {
+            //arrange
+            const int expect = 8;
+            var exchangeService = new ExchangeService(_stockService.Object, _positionService.Object, _wdService.Object, _currencyConvertor.Object);
+            //act
+            var result=exchangeService.GetPriceInEuro(10, 0.8);
+            //assert
+            Assert.AreEqual(expect, result);
         }
     }
 }

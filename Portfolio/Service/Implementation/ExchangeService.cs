@@ -17,42 +17,48 @@ namespace Service.Implementation
             _vwdService = vwdService;
             _currencyConvertor = currencyConvertor;
         }
-        public async Task<Position> RemovePosition(SellRequest sellRequest)
+        public async Task<Position> RemovePosition(PositionRequest positionRequest)
         {
-            if (sellRequest.Contract < 0 || sellRequest.Price < 0)
+            if (positionRequest.Contract < 0 || positionRequest.Price < 0)
             {
                 throw new CustomException("values Should be greater than zero");
             }
             Stock? stock = null;
-            stock = await _stockService.GetAsync(sellRequest.Symbol, sellRequest.UserId);
+            stock = await _stockService.GetAsync(positionRequest.Symbol, positionRequest.UserId);
             if (stock == null) throw new CustomException("No symbol found");
-            if (stock.CurrentAssetContract < sellRequest.Contract)
+            if (stock.CurrentAssetContract < positionRequest.Contract)
             {
                 throw new CustomException("number of sell should be equal or less than current asset");
             }
-            var euro = await _currencyConvertor.Convert(sellRequest.CurrencyName, "EUR");
-            var pricInEuro = euro * sellRequest.Price;
+            var euro = await _currencyConvertor.Convert(positionRequest.CurrencyName, "EUR");
+            var pricInEuro = GetPriceInEuro(positionRequest.Price, euro);
             var position = await _positionService.AddAsync(new Position()
             {
-                PortfolioId = sellRequest.PortfolioId,
+                PortfolioId = positionRequest.PortfolioId,
                 StockId = stock.Id,
-                Contract = sellRequest.Contract,
+                Contract = positionRequest.Contract,
                 Price = pricInEuro,
-                Bought = pricInEuro * sellRequest.Contract,
+                Bought = pricInEuro * positionRequest.Contract,
                 TransactionType = TransactionType.Sell
             });
             return position;
         }
 
-        public async Task<Position> AddPosition(PositionRequest posistionReqeust)
+        public double GetPriceInEuro(double price, double euroRate)
+        {
+            var priceInEuro = euroRate * price;
+            return priceInEuro;
+        }
+
+        public async Task<Position> AddPosition(PositionRequest positionRequest)
         {
             Stock? stock = null;
             Stock? newStock = null;
-            stock = await _stockService.GetAsync(posistionReqeust.Symbol, posistionReqeust.UserId);
+            stock = await _stockService.GetAsync(positionRequest.Symbol, positionRequest.UserId);
             if (stock == null)
             {
-                var onlineStockInfo = await _vwdService.GetAsync(posistionReqeust.Symbol);
-                if (string.IsNullOrEmpty(onlineStockInfo.Name)) throw new Exception("symbol not found");
+                var onlineStockInfo = await _vwdService.GetAsync(positionRequest.Symbol);
+                if (string.IsNullOrEmpty(onlineStockInfo.Name)) throw new CustomException("symbol not found");
                 newStock = new Stock()
                 {
                     Name = onlineStockInfo.Name,
@@ -69,16 +75,16 @@ namespace Service.Implementation
                     Symbol = stock.Symbol
                 };
             }
-            var euro = await _currencyConvertor.Convert(posistionReqeust.CurrencyName, "EUR");
-            var pricInEuro = euro * posistionReqeust.Price;
+            var euro = await _currencyConvertor.Convert(positionRequest.CurrencyName, "EUR");
+            var priceInEuro = GetPriceInEuro(positionRequest.Price, euro);
             var addedStock = await _stockService.AddAsync(newStock);
             var position = await _positionService.AddAsync(new Position()
             {
-                PortfolioId = posistionReqeust.PortfolioId,
+                PortfolioId = positionRequest.PortfolioId,
                 StockId = addedStock.Id,
-                Contract = posistionReqeust.Contract,
-                Price = pricInEuro,
-                Bought = pricInEuro * posistionReqeust.Contract,
+                Contract = positionRequest.Contract,
+                Price = priceInEuro,
+                Bought = priceInEuro * positionRequest.Contract,
             });
             return position;
 
