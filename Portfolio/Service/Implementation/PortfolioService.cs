@@ -45,6 +45,7 @@ namespace Service.Implementation
                     if (dbStockItem.Key == onlineStockItem.VwdKey)
                     {
                         var currentAssetContract = GetCurrentAssetContract(dbStockItem);
+                        var lastBuyPrice= dbStockItem.OrderByDescending(x => x.CreateAt).First().Price;
                         portfolioItems.Add(new PortfolioItem
                         {
                             PositionId = dbStockItem.First().Id,
@@ -52,7 +53,7 @@ namespace Service.Implementation
                             Symbol = dbStockItem.FirstOrDefault()?.Stock.Symbol ?? "",
                             Price = double.Parse(onlineStockItem.Price.ToString("#.##")),
                             Name = dbStockItem.FirstOrDefault()?.Stock.Name ?? "",
-                            Bought = double.Parse(dbStockItem.OrderByDescending(x => x.CreateAt).First().Price.ToString("#.##")) * currentAssetContract,
+                            Bought = double.Parse((lastBuyPrice * currentAssetContract).ToString("#.##")),
                             Current = double.Parse((onlineStockItem.Price * currentAssetContract).ToString("#.##")),
                             Quantity = currentAssetContract,
                             Yield = double.Parse(_profitCalculator.CalcTotalProfit(dbStockItem.ToList(), onlineStockItem.Price).ToString("#.##"))
